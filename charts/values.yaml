@@ -1,8 +1,0 @@
-configMap:
-  environment: tst01
-  keyVaultEndpoint: https://tst-01-westus-kv.vault.azure.net/
-  appVersion: Dev
-  javaOpts: -Xss10m -Djna.debug_load=true -Dtkc.log.key=abc-123 -Depdg.log.level=9 -Duser.timezone=GMT -Dnetworkaddress.cache.ttl=60 -Xmx4G -Xms4G -XX:ActiveProcessorCount=3 -XX:-CreateMinidumpOnCrash -XX:-PrintGCDetails -XX:-HeapDumpOnOutOfMemoryError -XX:+UseParallelGC -XX:MaxGCPauseMillis=50 -XX:InitiatingHeapOccupancyPercent=30 -XX:G1ReservePercent=20 -XX:ConcGCThreads=1
-
-persistentVolume:
-  
