@@ -1,0 +1,3 @@
+configMap:
+  environment: tst02
+  keyVaultEndpoint: https://tst-02-westus-kv.vault.azure.net/
