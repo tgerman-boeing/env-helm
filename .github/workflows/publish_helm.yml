@@ -82,7 +82,7 @@ jobs:
 
       - name: Package and push helm chart
         run: |
-          helm package ./charts/sample-app --version ${{ steps.set-variables.outputs.VERSION }}
+          helm package ./charts --version ${{ steps.set-variables.outputs.VERSION }}
           helm push ./${{ env.IMAGE_NAME }}-${{ steps.set-variables.outputs.VERSION }}.tgz oci://${{ steps.set-variables.outputs.REPOSITORY }}/charts          
   
   publish-helm-chart:
