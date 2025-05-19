@@ -19,39 +19,89 @@ env:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  build-and-push-image:
-    runs-on: ubuntu-latest
+  # build-and-push-image:
+  #   runs-on: ubuntu-latest
 
+  #   permissions:
+  #     contents: read
+  #     packages: write
+  #     attestations: write
+  #     id-token: write
+
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+
+  #     - name: Log in to the Container registry
+  #       uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+  #       with:
+  #         registry: ${{ env.REGISTRY }}
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
+
+  #     - name: Configure Git
+  #       run: |
+  #         git config user.name "$GITHUB_ACTOR"
+  #         git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+  
+  #     - name: Run chart-releaser
+  #       uses: helm/chart-releaser-action@v1.7.0
+  #       env:
+  #         CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"          
+  #         pages_branch: dev
+      
+  package-helm-chart:
     permissions:
       contents: read
       packages: write
-      attestations: write
-      id-token: write
+
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      # - name: Log in to the Container registry
-      #   uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
-      #   with:
-      #     registry: ${{ env.REGISTRY }}
-      #     username: ${{ github.actor }}
-      #     password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set environment variables
+        id: set-variables
+        run: |
+          echo "REPOSITORY=ghcr.io/$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+          echo "VERSION=$(yq -r .version ./charts/Chart.yaml)" >> "$GITHUB_OUTPUT"          
 
-      # - name: Configure Git
-      #   run: |
-      #     git config user.name "$GITHUB_ACTOR"
-      #     git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-  
-      # - name: Run chart-releaser
-      #   uses: helm/chart-releaser-action@v1.7.0
-      #   env:
-      #     CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"          
+      - name: Env variable output
+        id: test-variables
+        run: |
+          echo ${{ steps.set-variables.outputs.REPOSITORY }}
+          echo ${{ steps.set-variables.outputs.VERSION }}          
 
-      - name: Publish Helm Package
-        uses: J12934/helm-gh-pages-action@master
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
-          access-token: "${{ secrets.GITHUB_TOKEN }}" 
-          deploy-branch: main
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Package and push helm chart
+        run: |
+          helm package ./charts/sample-app --version ${{ steps.set-variables.outputs.VERSION }}
+          helm push ./${{ env.IMAGE_NAME }}-${{ steps.set-variables.outputs.VERSION }}.tgz oci://${{ steps.set-variables.outputs.REPOSITORY }}/charts          
+  
+  publish-helm-chart:
+    permissions:
+      id-token: write
+      packages: write
+      contents: write
+      actions: read
+      deployments: read
+      pull-requests: read
       
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Publish Helm chart to GitHub Pages
+        uses: stefanprodan/helm-gh-pages@0ad2bb377311d61ac04ad9eb6f252fb68e207260 # v1.7.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          linting: off
