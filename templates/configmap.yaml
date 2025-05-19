@@ -9,4 +9,5 @@ data:
   KEY_VAULT_ENDPOINT: {{ .keyVaultEndpoint }}
   APP_VERSION: {{ .appVersion | quote }}
   JAVA_OPTS: {{ .javaOpts }}
+  MY_VALUE: {{ .myValue }}
 {{- end }}  
