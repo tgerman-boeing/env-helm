@@ -15,41 +15,10 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: fds-tst-env-chart
+  IMAGE_NAME: env-helm
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
-jobs:
-  # build-and-push-image:
-  #   runs-on: ubuntu-latest
-
-  #   permissions:
-  #     contents: read
-  #     packages: write
-  #     attestations: write
-  #     id-token: write
-
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
-
-  #     - name: Log in to the Container registry
-  #       uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
-  #       with:
-  #         registry: ${{ env.REGISTRY }}
-  #         username: ${{ github.actor }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}
-
-  #     - name: Configure Git
-  #       run: |
-  #         git config user.name "$GITHUB_ACTOR"
-  #         git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-  
-  #     - name: Run chart-releaser
-  #       uses: helm/chart-releaser-action@v1.7.0
-  #       env:
-  #         CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"          
-  #         pages_branch: dev
-      
+jobs:      
   package-helm-chart:
     permissions:
       id-token: write
@@ -71,7 +40,7 @@ jobs:
         id: set-variables
         run: |
           echo "REPOSITORY=ghcr.io/$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
-          echo "VERSION=$(yq -r .version ./charts/${{ env.IMAGE_NAME }}/Chart.yaml)" >> "$GITHUB_OUTPUT"          
+          echo "VERSION=$(yq -r .version ./Chart.yaml)" >> "$GITHUB_OUTPUT"          
 
       - name: Env variable output
         id: test-variables
@@ -88,14 +57,8 @@ jobs:
 
       - name: Package and push helm chart
         run: |
-          helm package ./charts/${{ env.IMAGE_NAME }} --version ${{ steps.set-variables.outputs.VERSION }}
+          helm package ./ --version ${{ steps.set-variables.outputs.VERSION }}
           helm push ./${{ env.IMAGE_NAME }}-${{ steps.set-variables.outputs.VERSION }}.tgz oci://${{ steps.set-variables.outputs.REPOSITORY }}/charts          
-
-      # - name: Publish Helm chart to GitHub Pages
-      #   uses: stefanprodan/helm-gh-pages@0ad2bb377311d61ac04ad9eb6f252fb68e207260 # v1.7.0
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     linting: off
 
       - name: Configure Git
         run: |
@@ -108,3 +71,4 @@ jobs:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"          
           skip_packaging: true
           skip_upload: true
+          charts_dir: ./
