@@ -15,7 +15,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: env-helm
+  CHART_NAME: env-chart
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:      
@@ -40,7 +40,7 @@ jobs:
         id: set-variables
         run: |
           echo "REPOSITORY=ghcr.io/$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
-          echo "VERSION=$(yq -r .version ./Chart.yaml)" >> "$GITHUB_OUTPUT"          
+          echo "VERSION=$(yq -r .version ./charts/${{ env.CHART_NAME }}/Chart.yaml)" >> "$GITHUB_OUTPUT"          
 
       - name: Env variable output
         id: test-variables
@@ -57,8 +57,8 @@ jobs:
 
       - name: Package and push helm chart
         run: |
-          helm package ./ --version ${{ steps.set-variables.outputs.VERSION }}
-          helm push ./${{ env.IMAGE_NAME }}-${{ steps.set-variables.outputs.VERSION }}.tgz oci://${{ steps.set-variables.outputs.REPOSITORY }}/charts          
+          helm package ./charts/${{ env.CHART_NAME }} --version ${{ steps.set-variables.outputs.VERSION }}
+          helm push ./${{ env.CHART_NAME }}-${{ steps.set-variables.outputs.VERSION }}.tgz oci://${{ steps.set-variables.outputs.REPOSITORY }}/charts          
 
       - name: Configure Git
         run: |
@@ -69,7 +69,6 @@ jobs:
         uses: helm/chart-releaser-action@v1.7.0
         with:
           skip_packaging: true
-          skip_upload: true
-          charts_dir: "./"       
+          skip_upload: true     
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"          
