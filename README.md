@@ -7,7 +7,7 @@ Helm's [documentation](https://helm.sh/docs) to get started.
 
 Once Helm has been set up correctly, add the repo as follows:
 
-    helm repo add env-helm https://github.com/tgerman-boeing/env-helm
+    helm repo add env-helm https://tgerman-boeing.github.io/env-helm
 
 If you had already added this repo earlier, run `helm repo update` to retrieve
 the latest versions of the packages.  You can then run `helm search repo
@@ -15,7 +15,7 @@ the latest versions of the packages.  You can then run `helm search repo
 
 To install the env-helm chart:
 
-    helm install demo env-helm/env-helm
+    helm install demo env-helm/env-chart
 
 To uninstall the chart:
 
