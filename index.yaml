@@ -3,6 +3,16 @@ entries:
   env-chart:
   - apiVersion: v2
     appVersion: 1.18.0
+    created: "2025-05-20T18:18:49.736066248Z"
+    description: A Helm chart for Kubernetes
+    digest: 69c96370dc62c6728439b8faf63ae38c465e2c9c587ed9496afdccb23248ca57
+    name: env-chart
+    type: application
+    urls:
+    - https://github.com/tgerman-boeing/env-helm/releases/download/env-chart-0.1.13/env-chart-0.1.13.tgz
+    version: 0.1.13
+  - apiVersion: v2
+    appVersion: 1.18.0
     created: "2025-05-20T17:11:21.611728717Z"
     description: A Helm chart for Kubernetes
     digest: ed6b1b3ea33ae487795a2305c4dc92b38b66f9014b3d956f08be623069565834
@@ -32,4 +42,4 @@ entries:
     urls:
     - https://github.com/tgerman-boeing/env-helm/releases/download/fds-tst-env-chart-0.1.8/fds-tst-env-chart-0.1.8.tgz
     version: 0.1.8
-generated: "2025-05-20T17:11:21.611738716Z"
+generated: "2025-05-20T18:18:49.736077489Z"
