@@ -9,7 +9,7 @@ entries:
     name: env-chart
     type: application
     urls:
-    - https://github.com/tgerman-boeing/env-helm/releases/download/env-chart-0.1.13/env-chart-0.1.13.tgz
+    - oci://ghcr.io/tgerman-boeing/env-helm/env-chart:0.1.13
     version: 0.1.13
   - apiVersion: v2
     appVersion: 1.18.0
